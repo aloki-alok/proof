@@ -3,7 +3,7 @@
     <article class="ink-card">
       <span class="ink-frame" data-ink aria-hidden="true"></span>
       <h3 data-ink>Tonight's sketch</h3>
-      <p>The outline and the heading are inked. This sentence stays clean so it is easy to read. Select it, then tab to the button.</p>
+      <p>The outline and the heading are inked. This sentence is left clean so it stays readable. Select it, then tab to the button.</p>
       <button type="button" class="ink-btn"><span class="ink-frame" data-ink aria-hidden="true"></span><span class="ink-label">Hover to bleed</span></button>
     </article>
     <div class="ink-shapes" data-ink aria-hidden="true">
@@ -27,6 +27,8 @@
     const val = (k: string) => +root.querySelector<HTMLInputElement>(`[data-k=${k}]`)!.value
     btn.addEventListener('pointerenter', () => frame.set({ bleed: 2.5, rough: 6 }))
     btn.addEventListener('pointerleave', () => frame.set({ bleed: val('bleed'), rough: val('rough') }))
+    // the boil is off for readers who ask for reduced motion, so the switch says so instead of doing nothing
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) Object.assign(root.querySelector<HTMLInputElement>('[data-k=boil]')!, { checked: false, disabled: true })
     root.querySelector('.ctl')!.addEventListener('input', e => {
       const t = e.target as HTMLInputElement
       all.forEach(i => i.set({ [t.dataset.k!]: t.type === 'checkbox' ? t.checked : +t.value }))
