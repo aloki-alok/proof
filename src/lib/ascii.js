@@ -76,12 +76,17 @@ export function field(pre, { word = 'proof', face = '800 100px Martian Mono', ra
   pre.addEventListener('pointerleave', () => { px = py = -1 })
   pre.addEventListener('pointerdown', e => { const [x, y] = at(e); drops.push({ x, y, t: performance.now() / 1000 }) })
   const redraw = () => { layout(); paint(performance.now()) }
-  new ResizeObserver(redraw).observe(pre)
-  new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen && !raf && !still) raf = requestAnimationFrame(loop) }).observe(pre)
+  const ro = new ResizeObserver(redraw)
+  const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen && !raf && !still) raf = requestAnimationFrame(loop) })
+  ro.observe(pre)
+  io.observe(pre)
   redraw()
   // canvas falls back to a system font until the web font loads, so redraw once it arrives
   document.fonts?.load(face).then(redraw)
-  return { set(next) { word = next; redraw() } }
+  return {
+    set(next) { word = next; redraw() },
+    destroy() { ro.disconnect(); io.disconnect(); cancelAnimationFrame(raf); raf = 0; seen = false },
+  }
 }
 
 // box-drawing table sized to whatever width it gets; the middle column absorbs the slack
@@ -105,8 +110,10 @@ export function table(pre, rows, { min = 6 } = {}) {
       add(i < rows.length - 1 ? rule('├', '┼', '┤') + '\n' : rule('└', '┴', '┘'))
     })
   }
-  new ResizeObserver(draw).observe(pre)
+  const ro = new ResizeObserver(draw)
+  ro.observe(pre)
   draw()
+  return { destroy() { ro.disconnect() } }
 }
 
 // a rule like ──[ ink ]────── that always fills its line
@@ -118,6 +125,8 @@ export function rules(root = document) {
     const head = `──[ ${el.dataset.rule} ]`
     el.textContent = head + '─'.repeat(Math.max(0, n - head.length))
   })
-  new ResizeObserver(draw).observe(document.body)
+  const ro = new ResizeObserver(draw)
+  ro.observe(document.body)
   draw()
+  return { destroy() { ro.disconnect() } }
 }

@@ -7,14 +7,14 @@
 </div>
 
 <script>
-  import { keypad, tones, LOW, HIGH } from '../../lib/dial.js'
+  import { keypad, tones } from '../../lib/dial.js'
   import { line } from '../../lib/dial-scope.js'
   for (const root of document.querySelectorAll<HTMLElement>('[data-demo="dial"]')) {
     const say = root.querySelector('.b-say')!, keys = root.querySelector('.b-keys')!
     // the context starts suspended and press() resumes it inside the gesture, so the graph can draw before any sound
     const kp = keypad()
     let on: number[] = []
-    line(root.querySelector('canvas')!, kp, { maxHz: 1750, guides: [...LOW, ...HIGH], active: () => on })
+    line(root.querySelector('canvas')!, kp, { maxHz: 1750, active: () => on })
     for (const k of '123456789*0#') {
       const b = document.createElement('button'), [lo, hi] = tones(k)!
       b.type = 'button'

@@ -123,7 +123,7 @@ export function reed(el, options = {}) {
 
   return {
     set(next) { o = { ...o, ...next }; render() },
-    move(x, y) { o.patch = { ...o.patch, x, y }; place(x, y) },
+    move(x, y) { if (!o.patch) return; o.patch = { ...o.patch, x, y }; place(x, y) },
     get options() { return { ...o } },
     destroy() { ro.disconnect(); filter.remove(); el.style.filter = '' },
   }

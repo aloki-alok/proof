@@ -3,7 +3,9 @@
 function loop(canvas, paint) {
   let raf = 0, seen = false
   const tick = () => { paint(); raf = seen ? requestAnimationFrame(tick) : 0 }
-  new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen && !raf) raf = requestAnimationFrame(tick) }).observe(canvas)
+  const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen && !raf) raf = requestAnimationFrame(tick) })
+  io.observe(canvas)
+  return { destroy() { io.disconnect(); cancelAnimationFrame(raf); raf = 0; seen = false } }
 }
 
 function fit(canvas) {
@@ -18,11 +20,11 @@ function fit(canvas) {
  * @param {HTMLCanvasElement} canvas
  * @param {{ analyser: AnalyserNode, ctx: BaseAudioContext }} kp
  * @param {{ maxHz?: number, color?: string, guide?: string, hot?: string, font?: string, guides?: number[], active?: () => number[], fill?: string }} [options] */
-export function line(canvas, kp, { maxHz = 1800, color = '#18181b', guide = '#e4e4e0', hot = '#2b59ff', font = 'Martian Mono', guides = [], active = () => [], fill = 'rgba(43,89,255,.08)' } = {}) {
+export function line(canvas, kp, { maxHz = 1800, color = '#18181b', guide = '#e4e4e0', hot = '#2b59ff', font = 'Martian Mono', guides = [697, 770, 852, 941, 1209, 1336, 1477, 1633], active = () => [], fill = 'rgba(43,89,255,.08)' } = {}) {
   const ctx = canvas.getContext('2d')
   const bins = new Uint8Array(kp.analyser.frequencyBinCount)
   const hzPerBin = kp.ctx.sampleRate / kp.analyser.fftSize
-  loop(canvas, () => {
+  return loop(canvas, () => {
     const { W, H, dpr } = fit(canvas)
     const pad = 28 * dpr, top = 34 * dpr
     kp.analyser.getByteFrequencyData(bins)
@@ -67,7 +69,7 @@ export function waterfall(canvas, kp, { maxHz = 1800, bg = [12, 11, 14], hot = [
     const t = v / 255, a = Math.min(1, t * 1.7), b = Math.pow(t, 1.6)
     return `rgb(${Math.round(bg[0] + (hot[0] - bg[0]) * a)},${Math.round(bg[1] + (hot[1] - bg[1]) * b)},${Math.round(bg[2] + (hot[2] - bg[2]) * b)})`
   }
-  loop(canvas, () => {
+  return loop(canvas, () => {
     const { W, H, dpr, resized } = fit(canvas)
     const L = live * dpr, F = H - L
     if (resized) { ctx.fillStyle = `rgb(${bg})`; ctx.fillRect(0, 0, W, H) }
