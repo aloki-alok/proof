@@ -10,9 +10,15 @@ function judge(n) {
   if (tag === 'img') return n.alt ? { tag, text: `"${n.alt}"` } : { tag, text: 'no alt text', gap: true }
   if (tag === 'a') return name(n) ? { tag, text: `${name(n)} → ${n.getAttribute('href')}` } : { tag, text: `no link text → ${n.getAttribute('href')}`, gap: true }
   if (tag === 'button') return name(n) ? { tag, text: name(n) } : { tag, text: 'no label', gap: true }
-  if (tag === 'input') {
-    const label = n.labels?.[0] ? text(n.labels[0]) : n.getAttribute('aria-label')
+  // button-like inputs are named by their value (an image input by its alt), like a button by its text
+  if (tag === 'input' && ['submit', 'reset', 'button', 'image'].includes(n.type)) {
+    const label = n.getAttribute('aria-label') || (n.type === 'image' ? n.alt : n.value) || { submit: 'Submit', reset: 'Reset' }[n.type]
     return label ? { tag, text: `${n.type}: ${label}` } : { tag, text: `${n.type}: no label`, gap: true }
+  }
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') {
+    const kind = tag === 'input' ? n.type : tag
+    const label = n.labels?.[0] ? text(n.labels[0]) : n.getAttribute('aria-label')
+    return label ? { tag, text: `${kind}: ${label}` } : { tag, text: `${kind}: no label`, gap: true }
   }
   return null
 }
@@ -39,8 +45,8 @@ export function mark(root) {
   for (const l of lines) {
     let target = l.el
     if (l.el.parentElement?.classList.contains('rb-wrap')) target = l.el.parentElement
-    else if (l.el.tagName === 'IMG' || l.el.tagName === 'INPUT') {
-      // pseudo-elements cannot sit on img or input, so each one gets a span to carry the label
+    else if (['IMG', 'INPUT', 'TEXTAREA', 'SELECT'].includes(l.el.tagName)) {
+      // pseudo-elements cannot sit on replaced elements such as img and input, so each gets a span to carry the label
       const wrap = document.createElement('span')
       wrap.className = 'rb-wrap'
       l.el.replaceWith(wrap)
