@@ -10,6 +10,7 @@ export function GET() {
 
 Author: ${author.name}
 Author profiles: ${[author.url, ...author.sameAs].join(', ')}
+Source: ${author.repo}
 License: MIT. Every library file starts with a credit line naming the author.
 Install: download /r/<file>.js and import it. There is no npm package.
 

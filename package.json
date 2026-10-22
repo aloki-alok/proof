@@ -3,6 +3,7 @@
   "private": true,
   "license": "MIT",
   "author": "Alok Ranjan (https://alokranjan.me)",
+  "repository": "github:aloki-alok/proof",
   "type": "module",
   "scripts": {
     "dev": "astro dev",

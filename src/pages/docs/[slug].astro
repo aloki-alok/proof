@@ -24,6 +24,7 @@ const code = {
   description: lib.blurb,
   url: new URL(`/docs/${lib.slug}`, Astro.site).href,
   programmingLanguage: 'JavaScript',
+  codeRepository: author.repo,
   license: 'https://opensource.org/licenses/MIT',
   author: { '@id': author.id },
   isPartOf: { '@id': `${Astro.site!.origin}/#website` },

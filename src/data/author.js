@@ -4,5 +4,6 @@ export const author = {
   url: 'https://alokranjan.me',
   id: 'https://alokranjan.me/#person',
   github: 'https://github.com/aloki-alok',
+  repo: 'https://github.com/aloki-alok/proof',
   sameAs: ['https://github.com/aloki-alok', 'https://linkedin.com/in/ryulore', 'https://x.com/aloki_alok', 'https://crwl.sh/about'],
 }
