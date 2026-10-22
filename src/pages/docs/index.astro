@@ -1,6 +1,7 @@
 ---
 import Docs from '../../layouts/Docs.astro'
 import { libraries, gzKB } from '../../data/libraries.js'
+import { to } from '../../data/paths.js'
 const headings: [string, string][] = [['what', 'What proof is'], ['libraries', 'Libraries'], ['principles', 'Principles'], ['browsers', 'Browser support']]
 const size = (files: string[]) => files.reduce((s, f) => s + +gzKB(f), 0).toFixed(1)
 ---
@@ -10,13 +11,13 @@ const size = (files: string[]) => files.reduce((s, f) => s + +gzKB(f), 0).toFixe
 
   <h2 id="what">What proof is</h2>
   <p>Most visual effects on the web render into a canvas or WebGL layer, which hides the page from search engines, screen readers and text selection. proof applies its effects to live HTML instead, mostly through SVG filters and the Web Audio API.</p>
-  <p>Libraries are not published to npm. You download the file into your project and own it from then on. See <a href="/docs/install">Install</a>.</p>
+  <p>Libraries are not published to npm. You download the file into your project and own it from then on. See <a href={to('/docs/install')}>Install</a>.</p>
 
   <h2 id="libraries">Libraries</h2>
   <div class="tbl-wrap">
     <table class="tbl">
       <thead><tr><th>library</th><th>what it does</th><th>size, gzipped</th></tr></thead>
-      <tbody>{libraries.map(l => <tr><td><a href={`/docs/${l.slug}`}>{l.slug}</a></td><td>{l.line}</td><td><code>{size(l.files)} KB</code></td></tr>)}</tbody>
+      <tbody>{libraries.map(l => <tr><td><a href={to(`/docs/${l.slug}`)}>{l.slug}</a></td><td>{l.line}</td><td><code>{size(l.files)} KB</code></td></tr>)}</tbody>
     </table>
   </div>
 

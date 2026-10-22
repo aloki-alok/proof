@@ -1,6 +1,7 @@
 ---
 import Docs from '../../layouts/Docs.astro'
 import Code from '../../components/Code.astro'
+import { to } from '../../data/paths.js'
 const headings: [string, string][] = [['download', 'Download a file'], ['import', 'Import it'], ['update', 'Update later']]
 ---
 <Docs title="Install: proof" description="Copy one file into your project. No package, no build step." slug="install" headings={headings}>
@@ -9,7 +10,7 @@ const headings: [string, string][] = [['download', 'Download a file'], ['import'
 
   <h2 id="download">Download a file</h2>
   <p>Every library page has a download command. This one fetches ink:</p>
-  <div class="cmd"><code data-curl="/r/ink.js">curl -O /r/ink.js</code><button type="button" class="code-act" data-copy><i class="ic" aria-hidden="true">&#xF0C5;</i><span>copy</span></button></div>
+  <div class="cmd"><code data-curl={to('/r/ink.js')}>curl -O {to('/r/ink.js')}</code><button type="button" class="code-act" data-copy><i class="ic" aria-hidden="true">&#xF0C5;</i><span>copy</span></button></div>
   <p>You can also copy the source from the bottom of any library page.</p>
 
   <h2 id="import">Import it</h2>
@@ -20,5 +21,5 @@ const headings: [string, string][] = [['download', 'Download a file'], ['import'
 </script>`} />
 
   <h2 id="update">Update later</h2>
-  <p>The file is yours, so updates never arrive on their own. Read the <a href="/changelog">changelog</a>, then download the file again if you want the change. If you edited your copy, compare it with the new one first.</p>
+  <p>The file is yours, so updates never arrive on their own. Read the <a href={to('/changelog')}>changelog</a>, then download the file again if you want the change. If you edited your copy, compare it with the new one first.</p>
 </Docs>

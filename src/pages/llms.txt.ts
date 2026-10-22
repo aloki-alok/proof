@@ -1,5 +1,6 @@
 import { libraries, gzKB } from '../data/libraries.js'
 import { author } from '../data/author.js'
+import { to } from '../data/paths.js'
 
 // links stay relative until the site has its real domain; every agent resolves them against the URL it fetched
 export function GET() {
@@ -12,17 +13,17 @@ Author: ${author.name}
 Author profiles: ${[author.url, ...author.sameAs].join(', ')}
 Source: ${author.repo}
 License: MIT. Every library file starts with a credit line naming the author.
-Install: download /r/<file>.js and import it. There is no npm package.
+Install: download ${to('/r/')}<file>.js and import it. There is no npm package.
 
 ## Libraries
 
-${libraries.map(l => `- [${l.slug}](/docs/${l.slug}): ${l.line} ${size(l.files)} KB gzipped. Source: ${l.files.map(f => `/r/${f}`).join(', ')}${l.inspired ? `. Inspired by ${l.inspired[0]} (${l.inspired[1]})` : ''}`).join('\n')}
+${libraries.map(l => `- [${l.slug}](${to(`/docs/${l.slug}`)}): ${l.line} ${size(l.files)} KB gzipped. Source: ${l.files.map(f => to(`/r/${f}`)).join(', ')}${l.inspired ? `. Inspired by ${l.inspired[0]} (${l.inspired[1]})` : ''}`).join('\n')}
 
 ## Docs
 
-- [Introduction](/docs): what proof is and the rules every library follows
-- [Install](/docs/install): download one file and import it
-- [Changelog](/changelog): what changed and when
+- [Introduction](${to('/docs')}): what proof is and the rules every library follows
+- [Install](${to('/docs/install')}): download one file and import it
+- [Changelog](${to('/changelog')}): what changed and when
 
 ## How to credit
 

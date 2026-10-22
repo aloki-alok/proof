@@ -1,3 +1,6 @@
+---
+import { to } from '../../data/paths.js'
+---
 <div class="demo-readback" data-demo="readback">
   <div class="rb-bar">
     <label for="rb-level">people</label>
@@ -10,7 +13,7 @@
     <div class="rb-scanline" aria-hidden="true"></div>
     <h3>The night shift</h3>
     <div class="rb-cols">
-      <img src="/img/sample.svg" width="320" height="220">
+      <img src={to('/img/sample.svg')} width="320" height="220">
       <div class="rb-body">
         <p>We answer every call after 9 pm with an agent that knows the menu, the hours and the specials.</p>
         <p>Your regulars hear a voice they know. New callers get a table.</p>

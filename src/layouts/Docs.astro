@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro'
 import { libraries } from '../data/libraries.js'
+import { to } from '../data/paths.js'
 
 interface Props { title: string; description: string; slug: string; headings?: [string, string][]; schema?: Record<string, unknown>[] }
 const { title, description, slug, headings = [], schema } = Astro.props
@@ -18,23 +19,23 @@ const path = slug === 'docs' ? ['docs'] : ['docs', slug]
       <summary>{slug === 'docs' ? 'introduction' : slug}</summary>
       <nav class="side" aria-label="Docs, small screens">
         <p>guide/</p>
-        <ul>{tree(guide).map(t => <li><span>{t.branch}</span><a href={t.href} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
+        <ul>{tree(guide).map(t => <li><span>{t.branch}</span><a href={to(t.href)} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
         <p>libraries/</p>
-        <ul>{tree(libs).map(t => <li><span>{t.branch}</span><a href={t.href} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
+        <ul>{tree(libs).map(t => <li><span>{t.branch}</span><a href={to(t.href)} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
       </nav>
     </details>
     <nav class="side" aria-label="Docs">
       <p>guide/</p>
-      <ul>{tree(guide).map(t => <li><span>{t.branch}</span><a href={t.href} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
+      <ul>{tree(guide).map(t => <li><span>{t.branch}</span><a href={to(t.href)} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
       <p>libraries/</p>
-      <ul>{tree(libs).map(t => <li><span>{t.branch}</span><a href={t.href} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
+      <ul>{tree(libs).map(t => <li><span>{t.branch}</span><a href={to(t.href)} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
     </nav>
 
     <article class="doc">
       <slot />
       <nav class="pager" aria-label="Previous and next page">
-        {prev && <a class="prev" href={prev[1]}><span>previous</span>{prev[0]}</a>}
-        {next && <a class="next" href={next[1]}><span>next</span>{next[0]}</a>}
+        {prev && <a class="prev" href={to(prev[1])}><span>previous</span>{prev[0]}</a>}
+        {next && <a class="next" href={to(next[1])}><span>next</span>{next[0]}</a>}
       </nav>
     </article>
 

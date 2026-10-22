@@ -3,10 +3,11 @@ import '../styles/site.css'
 import '../styles/libraries.css'
 import { libraries } from '../data/libraries.js'
 import { author } from '../data/author.js'
+import { to, home } from '../data/paths.js'
 
 interface Props { title: string; description: string; path?: string[]; schema?: Record<string, unknown>[] }
 const { title, description, path = [], schema = [] } = Astro.props
-const here = Astro.url.pathname.replace(/\/$/, '') || '/'
+const here = Astro.url.pathname.slice(to('').length).replace(/\/$/, '') || '/'
 const nav = [['libraries', '/docs/ink'], ['docs', '/docs'], ['changelog', '/changelog']]
 const active = (href: string) => (href === '/docs' ? here === '/docs' || here === '/docs/install' : href === '/docs/ink' ? libraries.some(l => here === `/docs/${l.slug}`) : here === href)
 const pages = [
@@ -15,13 +16,12 @@ const pages = [
   ...libraries.map(l => ({ title: l.slug, href: `/docs/${l.slug}`, line: l.line, terms: [l.call, ...l.options, ...l.returns, ...(l.extra || [])].map(r => (Array.isArray(r) ? r[0] : r)).join(' ') })),
   { title: 'Changelog', href: '/changelog', line: 'What changed and when.' },
 ]
-const origin = Astro.site!.origin
 // one graph per page: the author is a stable @id, so every page and library points at the same person
 const graph = {
   '@context': 'https://schema.org',
   '@graph': [
     { '@type': 'Person', '@id': author.id, name: author.name, url: author.url, sameAs: author.sameAs },
-    { '@type': 'WebSite', '@id': `${origin}/#website`, name: 'proof', url: origin, description: 'Dependency-free JavaScript libraries for print, sound and text effects on the web.', author: { '@id': author.id }, publisher: { '@id': author.id }, license: 'https://opensource.org/licenses/MIT' },
+    { '@type': 'WebSite', '@id': `${home}#website`, name: 'proof', url: home, description: 'Dependency-free JavaScript libraries for print, sound and text effects on the web.', author: { '@id': author.id }, publisher: { '@id': author.id }, license: 'https://opensource.org/licenses/MIT' },
     ...schema,
   ],
 }
@@ -39,16 +39,16 @@ const graph = {
 <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site)}>
 <meta property="og:title" content={title}>
 <meta property="og:description" content={description}>
-<meta property="og:image" content={new URL('/og.png', Astro.site)}>
+<meta property="og:image" content={new URL(to('/og.png'), Astro.site)}>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="author" content={author.name}>
 <link rel="author" href={author.url}>
-<link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="text/plain" href={to('/llms.txt')} title="llms.txt">
+<link rel="icon" href={to('/favicon.svg')} type="image/svg+xml">
 <script type="application/ld+json" set:html={JSON.stringify(graph)} />
-<link rel="preload" href="/fonts/DepartureMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href={to('/fonts/DepartureMono-Regular.woff2')} as="font" type="font/woff2" crossorigin>
 <script is:inline>
   // set before first paint so a saved theme never flashes the other one
   try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t } catch {}
@@ -58,9 +58,9 @@ const graph = {
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
-    <a class="path" href="/" aria-label="proof home"><b>proof/</b>{path.map((p, i) => <span class={i === path.length - 1 ? 'cur' : ''}>{p}{i < path.length - 1 ? '/' : ''}</span>)}</a>
+    <a class="path" href={to('/')} aria-label="proof home"><b>proof/</b>{path.map((p, i) => <span class={i === path.length - 1 ? 'cur' : ''}>{p}{i < path.length - 1 ? '/' : ''}</span>)}</a>
     <nav class="links" aria-label="Main">
-      {nav.map(([label, href]) => <a href={href} aria-current={active(href) ? 'page' : undefined}>{label}</a>)}
+      {nav.map(([label, href]) => <a href={to(href)} aria-current={active(href) ? 'page' : undefined}>{label}</a>)}
     </nav>
     <button type="button" class="kbtn" data-search-open aria-label="Search the docs"><i class="ic" aria-hidden="true">&#xF002;</i><span class="k-label">search</span><kbd>⌘K</kbd></button>
     <button type="button" class="icon-btn" data-theme-toggle aria-label="Switch between light and dark"><i class="ic" data-theme-icon="light" aria-hidden="true">&#xF186;</i><i class="ic" data-theme-icon="dark" aria-hidden="true">&#xF185;</i></button>
@@ -73,9 +73,9 @@ const graph = {
   <div class="wrap">
     <p>Built by <a href={author.url} rel="me author">{author.name}</a>. Free and open source under the MIT license. Type: Departure Mono by Helena Zhang, Atkinson Hyperlegible Next by the Braille Institute, Basteleur and Ouroboros from Velvetyne, Redaction by Jeremy Mickel and Forest Young, Martian Mono by Evil Martians, jgs by Adel Faure. All SIL Open Font License.</p>
     <nav aria-label="Footer">
-      <a href="/docs">docs</a>
-      <a href="/changelog">changelog</a>
-      <a href="/llms.txt">llms.txt</a>
+      <a href={to('/docs')}>docs</a>
+      <a href={to('/changelog')}>changelog</a>
+      <a href={to('/llms.txt')}>llms.txt</a>
       <a href={author.repo}>github</a>
     </nav>
   </div>
@@ -84,7 +84,7 @@ const graph = {
 <dialog class="search" data-search aria-label="Search the docs">
   <input type="search" placeholder="Search libraries, options and methods" aria-label="Search" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-list">
   <ul id="search-list" role="listbox" aria-label="Results">
-    {pages.map((p, i) => <li role="none"><a id={`hit-${i}`} href={p.href} role="option" aria-selected="false" data-q={`${p.title} ${p.line} ${'terms' in p ? p.terms : ''}`.toLowerCase()}>{p.title}<span>{p.line}</span></a></li>)}
+    {pages.map((p, i) => <li role="none"><a id={`hit-${i}`} href={to(p.href)} role="option" aria-selected="false" data-q={`${p.title} ${p.line} ${'terms' in p ? p.terms : ''}`.toLowerCase()}>{p.title}<span>{p.line}</span></a></li>)}
   </ul>
   <p class="empty" hidden>Nothing matches. Try a library name such as ink or dial.</p>
   <footer><span>↑↓ move</span><span>enter open</span><span>esc close</span></footer>

@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro'
+import { to } from '../data/paths.js'
 ---
 <Base title="Page not found: proof" description="This page does not exist." path={['404']}>
   <div class="wrap hero" style="padding-bottom: 96px">
@@ -7,7 +8,7 @@ import Base from '../layouts/Base.astro'
     <h1>This page does not exist.</h1>
     <p class="lede">The link may be old, or the address may have a typo. Search the docs, or start from the library list.</p>
     <div class="ctas">
-      <a class="btn solid" href="/docs">Open the docs</a>
+      <a class="btn solid" href={to('/docs')}>Open the docs</a>
       <button type="button" class="btn" data-search-open>Search</button>
     </div>
   </div>

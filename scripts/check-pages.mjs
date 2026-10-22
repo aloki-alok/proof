@@ -3,14 +3,16 @@
 import { chromium, firefox, webkit } from 'playwright'
 import { readFileSync, mkdirSync } from 'node:fs'
 
-const base = process.argv[2] || 'http://localhost:4747'
+// base may carry a sub-path (http://localhost:4747/proof); links in the HTML then start with that prefix
+const base = (process.argv[2] || 'http://localhost:4747').replace(/\/$/, '')
+const prefix = new URL(base).pathname.replace(/\/$/, '')
 const shots = process.argv[3]
 if (shots) mkdirSync(shots, { recursive: true })
 // set PW_CHROMIUM / PW_FIREFOX / PW_WEBKIT to reuse browsers already on disk
 const engines = { chromium: [chromium, process.env.PW_CHROMIUM], firefox: [firefox, process.env.PW_FIREFOX], webkit: [webkit, process.env.PW_WEBKIT] }
 // the docs sidebar lists every guide and library page, so a new library is checked without editing this file
 const side = await (await fetch(base + '/docs')).text()
-const docs = [...new Set([...side.matchAll(/href="(\/docs[^"#]*)"/g)].map(m => m[1]))]
+const docs = [...new Set([...side.matchAll(new RegExp(`href="${prefix}(/docs[^"#]*)"`, 'g'))].map(m => m[1]))]
 const pages = ['/', ...docs, '/changelog', '/nope']
 const libs = docs.filter(d => d.split('/').length === 3 && d !== '/docs/install').map(d => d.split('/')[2])
 const fails = []
@@ -69,7 +71,7 @@ async function flows(browser, name) {
   check(await p.isVisible('[data-search] .empty'), `${name} search: no empty state for a miss`)
   await p.fill('[data-search] input', 'waterfall')
   const hit = await attr('[data-search] [aria-selected=true]', 'href')
-  check(hit === '/docs/dial', `${name} search: "waterfall" picked ${hit}`)
+  check(hit === prefix + '/docs/dial', `${name} search: "waterfall" picked ${hit}`)
   await p.fill('[data-search] input', 'read')
   const first = await attr('[data-search] [aria-selected=true]', 'id')
   await p.keyboard.press('ArrowDown')
@@ -88,8 +90,8 @@ async function flows(browser, name) {
   check(dl === 'readback.js', `${name} download saves as "${dl}"`)
 
   // readback: gaps inside text blocks count, and an image alt names its link
-  const lines = await p.evaluate(async () => {
-    const { read } = await import('/r/readback.js')
+  const lines = await p.evaluate(async src => {
+    const { read } = await import(src)
     const box = document.createElement('div')
     box.innerHTML = '<p>See <a href="/y"></a></p><h2><button></button></h2><a href="/z"><img src="/img/sample.svg" alt="Logo"></a><a href="/w"><img src="/img/sample.svg" alt="x" aria-hidden="true"></a><input type="submit" value="Go"><input type="hidden" name="t"><textarea></textarea><label>Plan <select><option>a</option></select></label>'
     document.body.append(box)
@@ -99,7 +101,7 @@ async function flows(browser, name) {
     out.push(got.find(l => l.tag === 'select')?.text)
     box.remove()
     return out
-  })
+  }, `${base}/r/readback.js`)
   check(lines.join() === 'p,a gap,h2,button gap,a,a gap,input,textarea gap,select,select: Plan', `${name} readback lines: ${lines}`)
 
   // theme toggle flips the page colour and survives a reload
