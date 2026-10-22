@@ -71,11 +71,13 @@ export function field(pre, { word = 'proof', face = '800 100px Martian Mono', ra
     pre.textContent = out
   }
 
+  const off = new AbortController(), on = { signal: off.signal }
+  let gone = false
   const at = e => { const r = pre.getBoundingClientRect(), { w, h } = cell(pre); return [(e.clientX - r.left) / w, (e.clientY - r.top) / h] }
-  pre.addEventListener('pointermove', e => { [px, py] = at(e) })
-  pre.addEventListener('pointerleave', () => { px = py = -1 })
-  pre.addEventListener('pointerdown', e => { const [x, y] = at(e); drops.push({ x, y, t: performance.now() / 1000 }) })
-  const redraw = () => { layout(); paint(performance.now()) }
+  pre.addEventListener('pointermove', e => { [px, py] = at(e) }, on)
+  pre.addEventListener('pointerleave', () => { px = py = -1 }, on)
+  pre.addEventListener('pointerdown', e => { const [x, y] = at(e); drops.push({ x, y, t: performance.now() / 1000 }) }, on)
+  const redraw = () => { if (!gone) { layout(); paint(performance.now()) } }
   const ro = new ResizeObserver(redraw)
   const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; if (seen && !raf && !still) raf = requestAnimationFrame(loop) })
   ro.observe(pre)
@@ -85,7 +87,7 @@ export function field(pre, { word = 'proof', face = '800 100px Martian Mono', ra
   document.fonts?.load(face).then(redraw)
   return {
     set(next) { word = next; redraw() },
-    destroy() { ro.disconnect(); io.disconnect(); cancelAnimationFrame(raf); raf = 0; seen = false },
+    destroy() { gone = true; off.abort(); ro.disconnect(); io.disconnect(); cancelAnimationFrame(raf); raf = 0; seen = false },
   }
 }
 
