@@ -1,0 +1,36 @@
+<div class="demo-dial" data-demo="dial">
+  <div class="b-card">
+    <p class="b-say" aria-live="polite">Press a key, or hold one down.</p>
+    <canvas class="b-scope" role="img" aria-label="Live spectrum with the eight touch-tone frequencies marked"></canvas>
+    <div class="b-keys"></div>
+  </div>
+</div>
+
+<script>
+  import { keypad, tones, LOW, HIGH } from '../../lib/dial.js'
+  import { line } from '../../lib/dial-scope.js'
+  for (const root of document.querySelectorAll<HTMLElement>('[data-demo="dial"]')) {
+    const say = root.querySelector('.b-say')!, keys = root.querySelector('.b-keys')!
+    // the context starts suspended and press() resumes it inside the gesture, so the graph can draw before any sound
+    const kp = keypad()
+    let on: number[] = []
+    line(root.querySelector('canvas')!, kp, { maxHz: 1750, guides: [...LOW, ...HIGH], active: () => on })
+    for (const k of '123456789*0#') {
+      const b = document.createElement('button'), [lo, hi] = tones(k)!
+      b.type = 'button'
+      b.className = 'bk'
+      b.textContent = k
+      b.setAttribute('aria-label', `${k}: ${lo} and ${hi} hertz`)
+      const down = () => { kp.press(k); on = [lo, hi]; b.classList.add('on'); say.innerHTML = `<b>${k}</b> is <b>${lo} Hz</b>, from its row, plus <b>${hi} Hz</b>, from its column.` }
+      const up = () => { kp.release(); on = []; b.classList.remove('on') }
+      b.addEventListener('pointerdown', e => { b.setPointerCapture(e.pointerId); down() })
+      b.addEventListener('pointerup', up)
+      b.addEventListener('pointercancel', up)
+      b.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); down() } })
+      b.addEventListener('keyup', e => { if (e.key === 'Enter' || e.key === ' ') up() })
+      // the keyup lands on another element if focus moves mid-press, so leaving the key ends the tone
+      b.addEventListener('blur', () => { if (b.classList.contains('on')) up() })
+      keys.append(b)
+    }
+  }
+</script>

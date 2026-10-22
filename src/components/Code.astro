@@ -1,0 +1,36 @@
+---
+import { Code as Shiki } from 'astro:components'
+
+interface Props { code: string; name: string; lang?: 'js' | 'html'; download?: string; tall?: boolean }
+const { code, name, lang = 'js', download, tall = false } = Astro.props
+---
+<figure class:list={['code', { tall }]}>
+  <figcaption class="code-bar">
+    <span class="name">{name}</span>
+    <span class="acts">
+      {download && <a class="code-act" href={download} download={download.split("/").pop()}><i class="ic" aria-hidden="true">&#xF019;</i>download</a>}
+      <button type="button" class="code-act" data-copy><i class="ic" aria-hidden="true">&#xF0C5;</i><span>copy</span></button>
+    </span>
+  </figcaption>
+  <Shiki code={code} lang={lang} themes={{ light: 'github-light', dark: 'github-dark' }} defaultColor={false} />
+</figure>
+
+<script>
+  // one listener serves every copy button on the page, including the install command rows
+  document.addEventListener('click', async e => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-copy]')
+    if (!btn) return
+    const box = btn.closest('.code, .cmd')!
+    const text = box.querySelector('pre, code')!.textContent!
+    const label = btn.querySelector('span')!
+    try {
+      await navigator.clipboard.writeText(text)
+      label.textContent = 'copied'
+      btn.classList.add('done')
+    } catch {
+      label.textContent = 'press ⌘C'
+      getSelection()!.selectAllChildren(box.querySelector('pre, code')!)
+    }
+    setTimeout(() => { label.textContent = 'copy'; btn.classList.remove('done') }, 1600)
+  })
+</script>

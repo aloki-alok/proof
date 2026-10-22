@@ -1,0 +1,56 @@
+<div class="demo-readback" data-demo="readback">
+  <div class="rb-bar">
+    <label for="rb-level">people</label>
+    <input type="range" id="rb-level" min="0" max="3" step="1" value="0">
+    <label for="rb-level">machines</label>
+    <button type="button" class="rb-scan">Scan</button>
+    <p class="rb-score"></p>
+  </div>
+  <div class="rb-page" data-level="0">
+    <div class="rb-scanline" aria-hidden="true"></div>
+    <h3>The night shift</h3>
+    <div class="rb-cols">
+      <img src="/img/sample.svg" width="320" height="220">
+      <div class="rb-body">
+        <p>We answer every call after 9 pm with an agent that knows the menu, the hours and the specials.</p>
+        <p>Your regulars hear a voice they know. New callers get a table.</p>
+        <div class="rb-links">
+          <a href="#pricing">See pricing</a>
+          <a href="#demo"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="currentColor"/></svg></a>
+        </div>
+        <label>Work email <input type="email"></label>
+        <input type="text" placeholder="Phone">
+        <div class="rb-btns">
+          <button type="button">Book a demo</button>
+          <button type="button"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h12" stroke="currentColor" stroke-width="2"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { mark } from '../../lib/readback.js'
+  for (const root of document.querySelectorAll<HTMLElement>('[data-demo="readback"]')) {
+    const page = root.querySelector<HTMLElement>('.rb-page')!, level = root.querySelector<HTMLInputElement>('input[type=range]')!
+    const score = root.querySelector('.rb-score')!, scan = root.querySelector<HTMLElement>('.rb-scanline')!
+    // the section heading wears down with the page, so the level is mirrored on the nearest section
+    const sec = root.closest<HTMLElement>('[data-rb-level]')
+    const lines = mark(page)
+    const gaps = lines.filter(l => l.gap).length
+    score.innerHTML = `machines can read <b>${lines.length - gaps}</b> of ${lines.length}. <b>${gaps}</b> redacted.`
+    const set = (v: number | string) => { page.dataset.level = String(v); if (sec) sec.dataset.rbLevel = String(v); level.value = String(v) }
+    level.addEventListener('input', () => set(level.value))
+    // the sample page's links are props, not navigation
+    page.addEventListener('click', e => { if ((e.target as HTMLElement).closest('a')) e.preventDefault() })
+    root.querySelector('.rb-scan')!.addEventListener('click', async () => {
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches
+      page.classList.add('scanning')
+      for (let v = 0; v <= 3; v++) {
+        set(v)
+        if (!still) await scan.animate([{ transform: 'translateY(0)' }, { transform: `translateY(${page.clientHeight}px)` }], { duration: 420, easing: 'cubic-bezier(.5,0,.5,1)' }).finished
+      }
+      page.classList.remove('scanning')
+    })
+  }
+</script>

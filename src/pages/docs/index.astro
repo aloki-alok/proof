@@ -1,0 +1,34 @@
+---
+import Docs from '../../layouts/Docs.astro'
+import { libraries, gzKB } from '../../data/libraries.js'
+const headings: [string, string][] = [['what', 'What proof is'], ['libraries', 'Libraries'], ['principles', 'Principles'], ['browsers', 'Browser support']]
+const size = (files: string[]) => files.reduce((s, f) => s + +gzKB(f), 0).toFixed(1)
+---
+<Docs title="Introduction: proof" description="Dependency-free JavaScript libraries for print, sound and text effects on real HTML." slug="docs" headings={headings}>
+  <h1 class="plain">Introduction</h1>
+  <p class="lead">proof is a set of small JavaScript libraries that add print, sound and text effects to the HTML you already have. Each library is one file with no dependencies.</p>
+
+  <h2 id="what">What proof is</h2>
+  <p>Most visual effects on the web render into a canvas or WebGL layer, which hides the page from search engines, screen readers and text selection. proof applies its effects to live HTML instead, mostly through SVG filters and the Web Audio API.</p>
+  <p>Libraries are not published to npm. You download the file into your project and own it from then on. See <a href="/docs/install">Install</a>.</p>
+
+  <h2 id="libraries">Libraries</h2>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>library</th><th>what it does</th><th>size, gzipped</th></tr></thead>
+      <tbody>{libraries.map(l => <tr><td><a href={`/docs/${l.slug}`}>{l.slug}</a></td><td>{l.line}</td><td><code>{size(l.files)} KB</code></td></tr>)}</tbody>
+    </table>
+  </div>
+
+  <h2 id="principles">Principles</h2>
+  <p>Every library follows the same four rules.</p>
+  <ul>
+    <li><b>One file, no dependencies.</b> Sizes on this site are measured from the shipped file at build time.</li>
+    <li><b>The page stays real.</b> Effects sit on top of live HTML. Text stays selectable and readable by crawlers and screen readers.</li>
+    <li><b>Motion respects the reader.</b> Anything that moves on its own stops when the reader has reduced motion turned on.</li>
+    <li><b>Limits are documented.</b> If a browser cannot run part of a library, the docs say so and the library turns that part off.</li>
+  </ul>
+
+  <h2 id="browsers">Browser support</h2>
+  <p>Every library runs in current versions of Chrome, Firefox and Safari. One exception: reed's moving glass is off in Safari, because Safari stops painting it. Fixed reed glass works in all three.</p>
+</Docs>

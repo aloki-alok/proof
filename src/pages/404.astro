@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro'
+---
+<Base title="Page not found: proof" description="This page does not exist." path={['404']}>
+  <div class="wrap hero" style="padding-bottom: 96px">
+    <pre class="hero-ascii" data-word="404" aria-hidden="true"></pre>
+    <h1>This page does not exist.</h1>
+    <p class="lede">The link may be old, or the address may have a typo. Search the docs, or start from the library list.</p>
+    <div class="ctas">
+      <a class="btn solid" href="/docs">Open the docs</a>
+      <button type="button" class="btn" data-search-open>Search</button>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { field } from '../lib/ascii.js'
+  const pre = document.querySelector<HTMLElement>('.hero-ascii')!
+  field(pre, { word: pre.dataset.word, rows: 20 })
+</script>

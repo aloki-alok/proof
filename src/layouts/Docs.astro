@@ -1,0 +1,66 @@
+---
+import Base from './Base.astro'
+import { libraries } from '../data/libraries.js'
+
+interface Props { title: string; description: string; slug: string; headings?: [string, string][]; schema?: Record<string, unknown>[] }
+const { title, description, slug, headings = [], schema } = Astro.props
+const guide = [['introduction', '/docs', 'docs'], ['install', '/docs/install', 'install']]
+const libs = libraries.map(l => [l.slug, `/docs/${l.slug}`, l.slug])
+const order = [...guide, ...libs]
+const i = order.findIndex(o => o[2] === slug)
+const prev = order[i - 1], next = order[i + 1]
+const tree = (list: string[][]) => list.map((o, n) => ({ label: o[0], href: o[1], here: o[2] === slug, branch: n === list.length - 1 ? '└─ ' : '├─ ' }))
+const path = slug === 'docs' ? ['docs'] : ['docs', slug]
+---
+<Base title={title} description={description} path={path} schema={schema}>
+  <div class="wrap docs">
+    <details class="side-menu">
+      <summary>{slug === 'docs' ? 'introduction' : slug}</summary>
+      <nav class="side" aria-label="Docs, small screens">
+        <p>guide/</p>
+        <ul>{tree(guide).map(t => <li><span>{t.branch}</span><a href={t.href} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
+        <p>libraries/</p>
+        <ul>{tree(libs).map(t => <li><span>{t.branch}</span><a href={t.href} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
+      </nav>
+    </details>
+    <nav class="side" aria-label="Docs">
+      <p>guide/</p>
+      <ul>{tree(guide).map(t => <li><span>{t.branch}</span><a href={t.href} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
+      <p>libraries/</p>
+      <ul>{tree(libs).map(t => <li><span>{t.branch}</span><a href={t.href} aria-current={t.here ? 'page' : undefined}>{t.label}</a></li>)}</ul>
+    </nav>
+
+    <article class="doc">
+      <slot />
+      <nav class="pager" aria-label="Previous and next page">
+        {prev && <a class="prev" href={prev[1]}><span>previous</span>{prev[0]}</a>}
+        {next && <a class="next" href={next[1]}><span>next</span>{next[0]}</a>}
+      </nav>
+    </article>
+
+    {headings.length > 0 && (
+      <nav class="toc" aria-label="On this page">
+        <p>on this page</p>
+        {headings.map(([id, text]) => <a href={`#${id}`}>{text}</a>)}
+      </nav>
+    )}
+  </div>
+</Base>
+
+<script>
+  // install commands carry the real host, which is only known in the browser
+  document.querySelectorAll<HTMLElement>('[data-curl]').forEach(c => { c.textContent = `curl -O ${location.origin}${c.dataset.curl}` })
+
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')]
+  const targets = links.map(a => document.getElementById(a.hash.slice(1))).filter(Boolean) as HTMLElement[]
+  if (targets.length) {
+    // the active heading is the last one that has scrolled past the top bar
+    const spy = () => {
+      let cur = targets[0]
+      for (const t of targets) if (t.getBoundingClientRect().top < 120) cur = t
+      links.forEach(a => a.classList.toggle('on', a.hash === `#${cur.id}`))
+    }
+    addEventListener('scroll', spy, { passive: true })
+    spy()
+  }
+</script>

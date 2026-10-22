@@ -1,0 +1,34 @@
+<div class="demo-reed" data-demo="reed">
+  <div class="reed-stage">
+    <div class="reed-art">
+      <p class="big">glass<span>.</span></p>
+      <div class="reed-card">
+        <p>This card sits under the glass. Select the text, or press the button.</p>
+        <button type="button">pressed <b>0</b></button>
+      </div>
+      <div class="reed-blocks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+  <div class="ctl">
+    <div class="seg" role="group" aria-label="Glass shape">
+      {['lines', 'waves', 'zigzag', 'ripple'].map(s => <button type="button" data-shape={s} aria-pressed={s === 'lines' ? 'true' : 'false'}>{s}</button>)}
+    </div>
+    <label>flute <input type="range" min="12" max="80" value="32" data-k="size"></label>
+    <label>strength <input type="range" min="0" max="80" value="18" data-k="strength"></label>
+  </div>
+</div>
+
+<script>
+  import { reed } from '../../lib/reed.js'
+  for (const root of document.querySelectorAll<HTMLElement>('[data-demo="reed"]')) {
+    const glass = reed(root.querySelector('.reed-art')!, { shape: 'lines', size: 32, strength: 18, shade: 0.2 })
+    const shapes = [...root.querySelectorAll<HTMLButtonElement>('[data-shape]')]
+    shapes.forEach(b => b.addEventListener('click', () => {
+      shapes.forEach(x => x.setAttribute('aria-pressed', String(x === b)))
+      glass.set({ shape: b.dataset.shape, size: b.dataset.shape === 'ripple' ? 24 : +root.querySelector<HTMLInputElement>('[data-k=size]')!.value })
+    }))
+    root.querySelectorAll<HTMLInputElement>('input[type=range]').forEach(i => i.addEventListener('input', () => glass.set({ [i.dataset.k!]: +i.value })))
+    const n = root.querySelector('.reed-card b')!
+    root.querySelector('.reed-card button')!.addEventListener('click', () => { n.textContent = String(+n.textContent! + 1) })
+  }
+</script>

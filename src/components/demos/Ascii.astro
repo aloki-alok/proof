@@ -1,0 +1,21 @@
+<div class="demo-ascii" data-demo="ascii">
+  <pre class="ascii-demo" aria-hidden="true"></pre>
+  <pre class="ascii-demo-tbl" aria-label="Example table"></pre>
+  <div class="ctl">
+    <label>word <input type="text" value="ink" maxlength="8" spellcheck="false"></label>
+    <span>click the field to drop a ripple</span>
+  </div>
+</div>
+
+<script>
+  import { field, table } from '../../lib/ascii.js'
+  for (const root of document.querySelectorAll<HTMLElement>('[data-demo="ascii"]')) {
+    const f = field(root.querySelector('.ascii-demo'), { word: 'ink', rows: 22 })
+    root.querySelector('input')!.addEventListener('input', e => f.set((e.target as HTMLInputElement).value || ' '))
+    table(root.querySelector('.ascii-demo-tbl'), [
+      ['field', 'a word as live characters', 'pointer ripples'],
+      ['table', 'boxes that fit any width', 'drops a column'],
+      ['rules', 'section rules like the ones above', 'fills its line'],
+    ])
+  }
+</script>

@@ -1,0 +1,79 @@
+---
+import Docs from '../../layouts/Docs.astro'
+import Code from '../../components/Code.astro'
+import Ink from '../../components/demos/Ink.astro'
+import Riso from '../../components/demos/Riso.astro'
+import Dial from '../../components/demos/Dial.astro'
+import Readback from '../../components/demos/Readback.astro'
+import Reed from '../../components/demos/Reed.astro'
+import Ascii from '../../components/demos/Ascii.astro'
+import { libraries, source, gzKB } from '../../data/libraries.js'
+import { author } from '../../data/author.js'
+
+export function getStaticPaths() {
+  return libraries.map(lib => ({ params: { slug: lib.slug }, props: { lib } }))
+}
+
+const { lib } = Astro.props
+const demos = { ink: Ink, riso: Riso, dial: Dial, readback: Readback, reed: Reed, ascii: Ascii }
+const Demo = demos[lib.slug as keyof typeof demos]
+const total = lib.files.reduce((s, f) => s + +gzKB(f), 0).toFixed(1)
+const code = {
+  '@type': 'SoftwareSourceCode',
+  name: lib.slug,
+  description: lib.blurb,
+  url: new URL(`/docs/${lib.slug}`, Astro.site).href,
+  programmingLanguage: 'JavaScript',
+  license: 'https://opensource.org/licenses/MIT',
+  author: { '@id': author.id },
+  isPartOf: { '@id': `${Astro.site!.origin}/#website` },
+  ...(lib.inspired ? { isBasedOn: lib.inspired[1] } : {}),
+}
+const headings: [string, string][] = [['try', 'Try it'], ['install', 'Install'], ['usage', 'Usage'], ['api', 'API'], ['notes', 'Notes'], ['source', 'Source']]
+---
+<Docs title={`${lib.slug}: ${lib.line}`} description={lib.blurb} slug={lib.slug} headings={headings} schema={[code]}>
+  <h1 class={`lib-${lib.slug}`} style={`font: ${lib.face}; font-size: clamp(56px, 8vw, 104px)`}>{lib.icon && <i class="ic" aria-hidden="true">{lib.icon}</i>}{lib.slug}</h1>
+  <p class="lead">{lib.blurb}</p>
+  <ul class="chips">
+    <li><b>{total} KB</b> gzipped</li>
+    <li><b>0</b> dependencies</li>
+    <li>{lib.files.length > 1 ? `${lib.files.length} files` : '1 file'}</li>
+    {lib.inspired && <li>inspired by <a href={lib.inspired[1]}>{lib.inspired[0]}</a></li>}
+  </ul>
+
+  <h2 id="try">Try it</h2>
+  <div class={`sheet lib-${lib.slug}`} data-rb-level="0"><Demo /></div>
+
+  <h2 id="install">Install</h2>
+  <p>Download the file into your project and import it. There is no package and no build step, so the code is yours to change.</p>
+  {lib.files.map(f => (
+    <div class="cmd"><code data-curl={`/r/${f}`}>curl -O /r/{f}</code><button type="button" class="code-act" data-copy><i class="ic" aria-hidden="true">&#xF0C5;</i><span>copy</span></button></div>
+  ))}
+
+  <h2 id="usage">Usage</h2>
+  <Code code={lib.usage} name="example.js" />
+
+  <h2 id="api">API</h2>
+  <h3><code>{lib.call}</code></h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>option</th><th>type</th><th>default</th><th>what it does</th></tr></thead>
+      <tbody>{lib.options.map(([name, type, def, what]) => <tr><td>{name}</td><td><code>{type}</code></td><td><code>{def}</code></td><td>{what}</td></tr>)}</tbody>
+    </table>
+  </div>
+  {lib.returns.length > 0 && <>
+    <h3>Returns</h3>
+    <div class="tbl-wrap"><table class="tbl"><tbody>{lib.returns.map(([name, what]) => <tr><td>{name}</td><td>{what}</td></tr>)}</tbody></table></div>
+  </>}
+  {lib.extra && <>
+    <h3>Also exported</h3>
+    <div class="tbl-wrap"><table class="tbl"><tbody>{lib.extra.map(([name, what]) => <tr><td>{name}</td><td>{what}</td></tr>)}</tbody></table></div>
+  </>}
+
+  <h2 id="notes">Notes</h2>
+  <ul>{lib.notes.map(n => <li>{n}</li>)}</ul>
+
+  <h2 id="source">Source</h2>
+  <p>The whole library. Read it, copy it, change it.</p>
+  {lib.files.map(f => <Code code={source(f)} name={`${f} (${gzKB(f)} KB gzipped)`} download={`/r/${f}`} tall />)}
+</Docs>

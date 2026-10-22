@@ -1,0 +1,126 @@
+/* sections share the page surface; each library brings only its accent. Printed objects (riso poster, dial card,
+   readback page, reed stage) keep fixed light colours because their effects need light paper. */
+.lib-ink { --lib: #d4381c }
+.lib-riso { --lib: #ff48b0 }
+.lib-dial { --lib: #2b59ff; --blue: #2b59ff; --ui: 'Martian Mono', ui-monospace, monospace }
+.lib-readback { --lib: #d6332c; --red: #d6332c }
+.lib-reed { --lib: #0f62fe; --acc-reed: #0f62fe }
+.lib-ascii { --lib: var(--acc) }
+[class*="lib-"] input[type=range], [class*="lib-"] input[type=checkbox] { accent-color: var(--lib) }
+
+.ctl { display: flex; flex-wrap: wrap; gap: 12px 32px; margin-top: 28px; font: 13px var(--mono) }
+.ctl label { display: flex; align-items: center; gap: 10px }
+
+/* ink */
+.ink-stage { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: center }
+.ink-card { position: relative; padding: 32px; max-width: 520px }
+.ink-card > *:not(.ink-frame) { position: relative }
+.ink-frame { position: absolute; inset: 0; border: 3px solid var(--ink); border-radius: 22px; background: var(--page) }
+.ink-card h3 { font: 700 40px/1 'Basteleur'; margin: 0 0 14px }
+.ink-card p { margin: 0 0 22px }
+.ink-btn { position: relative; border: 0; background: none; color: #fff; padding: 12px 22px; font: 700 16px var(--text) }
+.ink-btn .ink-frame { border-radius: 999px; background: var(--lib); border-color: var(--lib) }
+.ink-label { position: relative }
+.ink-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 999px }
+.ink-shapes { position: relative; height: 340px }
+.ink-shapes span { position: absolute; border: 3px solid var(--ink) }
+.is1 { width: 210px; height: 210px; border-radius: 50%; left: 8%; top: 10%; background: var(--ink) }
+.is2 { width: 170px; height: 170px; border-radius: 30px; right: 10%; top: 30%; transform: rotate(14deg); background: var(--lib) }
+.is3 { width: 260px; height: 26px; left: 20%; bottom: 8%; border-radius: 99px; background: var(--page) }
+@media (max-width: 820px) { .ink-stage { grid-template-columns: 1fr } .ink-shapes { height: 260px } .is1 { width: 160px; height: 160px } .is2 { width: 130px; height: 130px } .is3 { width: 200px } }
+
+/* riso */
+.poster { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 150px; gap: 14px; background: #f7f4ee; color: #131313; padding: 14px; border-radius: 4px; box-shadow: 0 0 0 1px var(--line) }
+.pt { overflow: hidden; border-radius: 4px }
+.p-type { grid-column: span 4; grid-row: span 2; background: #f7f4ee; display: flex; align-items: flex-end; padding: 8px 4px }
+.p-type p { margin: 0; font: clamp(56px, 9vw, 132px)/0.86 'Ouroboros'; color: #111 }
+.p-photo { grid-column: span 2; grid-row: span 2 }
+.ph { width: 100%; height: 100%; background: url(/img/sample.svg) center/cover }
+.p-dots { grid-column: span 2; background: radial-gradient(circle, #e8392d 34%, transparent 36%) 0 0/22px 22px, #f7f4ee }
+.p-note { grid-column: span 2; background: #f7f4ee; padding: 4px }
+.pn-big { font: 44px/1 'Ouroboros'; margin: 0 0 6px }
+.p-note p:last-child { margin: 0; font-size: 13px; line-height: 1.4 }
+.p-bars { grid-column: span 2; background: #f7f4ee; display: flex; align-items: flex-end; gap: 10px; padding: 10px }
+.p-bars i { flex: 1; background: #1a3cff }
+.p-bars i:nth-child(1) { height: 40% } .p-bars i:nth-child(2) { height: 75%; background: #e8392d } .p-bars i:nth-child(3) { height: 55% } .p-bars i:nth-child(4) { height: 95%; background: #111 } .p-bars i:nth-child(5) { height: 30% }
+@media (max-width: 820px) {
+  .poster { grid-template-columns: repeat(2, 1fr) }
+  .p-type, .p-photo, .p-note { grid-column: span 2 }
+  .p-dots, .p-bars { grid-column: span 1 }
+}
+
+/* dial */
+.b-card { background: #fff; color: #18181b; border-radius: 24px; box-shadow: 0 0 0 1px #e2e1dc; padding: clamp(18px, 3vw, 36px) }
+.b-say { margin: 0 0 8px; font: 400 clamp(17px, 2.1vw, 25px)/1.4 var(--ui); min-height: 1.4em }
+.b-say b { color: var(--blue); font-weight: 600 }
+.b-scope { display: block; width: 100%; height: clamp(220px, 30vw, 340px) }
+.b-keys { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; margin-top: 18px }
+.bk { height: 56px; border: 1px solid #e2e1dc; background: #f5f4f0; color: #18181b; border-radius: 14px; font: 600 20px/1 var(--ui); transition: transform .12s, background .15s, color .15s, border-color .15s; touch-action: manipulation }
+.bk:hover { border-color: #c9c8c2 }
+.bk.on { background: var(--blue); border-color: var(--blue); color: #fff; transform: translateY(-2px) }
+.bk:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px }
+@media (max-width: 760px) { .b-keys { grid-template-columns: repeat(6, minmax(0, 1fr)) } }
+
+/* readback */
+.rb-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; font-size: 14px }
+.rb-bar input { accent-color: var(--red); width: 220px }
+.rb-bar button { border: 1px solid var(--ink); background: var(--ink); color: var(--page); border-radius: 3px; padding: 8px 16px }
+.rb-score { margin: 0 0 0 auto; font: 14px/1 var(--mono) }
+.rb-score b { color: var(--red); font-weight: inherit }
+.rb-page { position: relative; background: #fff; color: #141414; border: 1px solid #d8d4cc; border-radius: 4px; padding: clamp(20px, 4vw, 48px); overflow: hidden; font-family: 'Redaction'; font-size: 18px }
+.rb-page h3 { font: 700 clamp(36px, 5vw, 64px)/1 'Redaction'; margin: 0 0 24px }
+.rb-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 32px; align-items: start }
+.rb-wrap { position: relative; display: block }
+.rb-cols img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 11; object-fit: cover; border-radius: 3px }
+.rb-body { display: grid; gap: 14px; justify-items: start }
+.rb-body p { margin: 0 }
+.rb-links { display: flex; gap: 18px; align-items: center }
+.rb-links a { color: #1a3cff }
+.rb-body label { display: grid; gap: 6px; font-size: 14px; width: 100% }
+.rb-body input { font: 16px 'Redaction'; padding: 10px 12px; border: 1px solid #c9c4ba; border-radius: 3px; width: 100%; background: #fff; color: #141414 }
+.rb-body .rb-wrap { width: 100% }
+.rb-btns { display: flex; gap: 10px }
+.rb-btns button { border: 0; background: #141414; color: #fff; padding: 10px 16px; border-radius: 3px; font: 16px 'Redaction' }
+@media (max-width: 760px) { .rb-cols { grid-template-columns: 1fr } .rb-score { margin-left: 0 } }
+.rb-page[data-level="1"], .rb-page[data-level="1"] * { font-family: 'Redaction 35' !important }
+.rb-page[data-level="2"], .rb-page[data-level="2"] * { font-family: 'Redaction 70' !important }
+.rb-page[data-level="3"], .rb-page[data-level="3"] * { font-family: 'Redaction 100' !important }
+.rb-page [data-rb] { position: relative }
+.rb-page[data-level="2"] [data-rb]::before, .rb-page[data-level="3"] [data-rb]::before {
+  content: attr(data-rb); position: absolute; left: 0; top: -16px; font: 12px/1 'jgs5' !important; color: #3d7a3a; white-space: nowrap; pointer-events: none; z-index: 2
+}
+.rb-page[data-level="2"] .rb-gap::before, .rb-page[data-level="3"] .rb-gap::before { color: var(--red) }
+.rb-page[data-level="2"] .rb-cols, .rb-page[data-level="3"] .rb-cols { row-gap: 40px }
+.rb-page[data-level="2"] .rb-body, .rb-page[data-level="3"] .rb-body { gap: 28px }
+.rb-page[data-level="2"] .rb-body label, .rb-page[data-level="3"] .rb-body label { gap: 24px }
+.rb-gap::after { content: ""; position: absolute; inset: -3px -4px; background: #141414; transform: scaleX(0); transform-origin: left; transition: transform .45s cubic-bezier(.7, 0, .2, 1); pointer-events: none; border-radius: 2px }
+.rb-page[data-level="3"] .rb-gap::after { transform: scaleX(1) }
+.rb-scanline { position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--red); box-shadow: 0 0 0 6px rgb(214 51 44 / .12); opacity: 0; pointer-events: none; z-index: 3 }
+.rb-page.scanning .rb-scanline { opacity: 1 }
+@media (prefers-reduced-motion: reduce) { .rb-gap::after { transition: none } }
+
+/* reed */
+.reed-stage { position: relative; border-radius: 6px; overflow: hidden; height: clamp(300px, 36vw, 420px); background: #e9eef3 }
+.reed-art { position: absolute; inset: 0; padding: clamp(18px, 3vw, 36px); display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px; align-items: center }
+.reed-art .big { margin: 0; font: 400 clamp(64px, 11vw, 160px)/.9 var(--mono); color: #10161c }
+.reed-art .big span { color: var(--acc-reed) }
+.reed-card { background: #fff; border-radius: 6px; padding: 20px; display: grid; gap: 12px; box-shadow: 0 0 0 1px #cfd8e1 }
+.reed-card p { margin: 0; font-size: 15px }
+.reed-card button { justify-self: start; border: 0; background: #10161c; color: #fff; padding: 10px 14px; border-radius: 4px; font: 14px var(--mono) }
+.reed-blocks { position: absolute; inset: auto 0 0 0; height: 30%; display: flex }
+.reed-blocks i { flex: 1 }
+.reed-blocks i:nth-child(1) { background: #0f62fe } .reed-blocks i:nth-child(2) { background: #ff7eb6 } .reed-blocks i:nth-child(3) { background: #ffd23f } .reed-blocks i:nth-child(4) { background: #10161c }
+.seg { display: inline-flex; border: 1px solid currentColor }
+.seg button { border: 0; background: none; padding: 7px 12px; font: 13px var(--mono) }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--page) }
+@media (max-width: 760px) { .reed-art { grid-template-columns: 1fr; align-content: start } .reed-blocks { height: 18% } }
+
+/* ascii */
+.ascii-demo { margin: 0; font: 12px/12px var(--mono); white-space: pre; overflow: hidden; height: calc(22 * 12px); cursor: crosshair; user-select: none; color: var(--ink) }
+.ascii-demo-tbl { margin: 24px 0 0; font: 14px/1 var(--mono); white-space: pre; overflow: hidden; color: var(--mut) }
+.lib-ascii input[type=text] { font: 14px var(--mono); background: transparent; color: inherit; border: 1px solid var(--line); padding: 8px 10px; width: 14ch }
+@media (max-width: 760px) { .ascii-demo { font-size: 8px; line-height: 8px; height: calc(22 * 8px) } }
+@font-face { font-family: 'Martian Mono'; src: url(/fonts/martian-mono-latin-800-normal.woff2) format('woff2'); font-weight: 800; font-display: swap }
+[data-rb-level="1"] .sec-head h2 { font-family: 'Redaction 35' !important }
+[data-rb-level="2"] .sec-head h2 { font-family: 'Redaction 70' !important }
+[data-rb-level="3"] .sec-head h2 { font-family: 'Redaction 100' !important }

@@ -1,0 +1,35 @@
+<div class="demo-ink" data-demo="ink">
+  <div class="ink-stage">
+    <article class="ink-card">
+      <span class="ink-frame" data-ink aria-hidden="true"></span>
+      <h3 data-ink>Tonight's sketch</h3>
+      <p>The outline and the heading are inked. This sentence stays clean so it is easy to read. Select it, then tab to the button.</p>
+      <button type="button" class="ink-btn"><span class="ink-frame" data-ink aria-hidden="true"></span><span class="ink-label">Hover to bleed</span></button>
+    </article>
+    <div class="ink-shapes" data-ink aria-hidden="true">
+      <span class="is1"></span><span class="is2"></span><span class="is3"></span>
+    </div>
+  </div>
+  <div class="ctl">
+    <label>roughness <input type="range" min="0" max="12" step="0.5" value="3" data-k="rough"></label>
+    <label>bleed <input type="range" min="0" max="3" step="0.25" value="0" data-k="bleed"></label>
+    <label><input type="checkbox" checked data-k="boil"> boil</label>
+  </div>
+</div>
+
+<script>
+  import { ink } from '../../lib/ink.js'
+  for (const root of document.querySelectorAll<HTMLElement>('[data-demo="ink"]')) {
+    const els = [...root.querySelectorAll<HTMLElement>('[data-ink]')]
+    const all = els.map(el => ink(el, { rough: 3 }))
+    const btn = root.querySelector('.ink-btn')!
+    const frame = all[els.indexOf(btn.querySelector('[data-ink]')!)]
+    const val = (k: string) => +root.querySelector<HTMLInputElement>(`[data-k=${k}]`)!.value
+    btn.addEventListener('pointerenter', () => frame.set({ bleed: 2.5, rough: 6 }))
+    btn.addEventListener('pointerleave', () => frame.set({ bleed: val('bleed'), rough: val('rough') }))
+    root.querySelector('.ctl')!.addEventListener('input', e => {
+      const t = e.target as HTMLInputElement
+      all.forEach(i => i.set({ [t.dataset.k!]: t.type === 'checkbox' ? t.checked : +t.value }))
+    })
+  }
+</script>

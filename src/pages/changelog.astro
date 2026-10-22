@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro'
+const entries = [
+  {
+    date: '2026-10-23',
+    title: 'proof 0.1',
+    items: [
+      'Six libraries: ink, riso, dial, readback, reed and ascii.',
+      'A docs page for each library, with a live demo, the full API and the source.',
+      'Install by download: every file is served at /r/ with its own command.',
+      'Search with ⌘K or /, and a light and dark theme.',
+    ],
+  },
+]
+---
+<Base title="Changelog: proof" description="What changed in proof and when." path={['changelog']}>
+  <div class="wrap doc" style="padding-block: 48px 96px; max-width: 900px">
+    <h1 class="plain">Changelog</h1>
+    <p class="lead">What changed and when. Download a file again to pick up a change.</p>
+    {entries.map(e => (
+      <section class="log">
+        <time datetime={e.date}>{e.date}</time>
+        <div><h2>{e.title}</h2><ul>{e.items.map(i => <li>{i}</li>)}</ul></div>
+      </section>
+    ))}
+  </div>
+</Base>

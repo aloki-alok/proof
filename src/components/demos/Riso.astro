@@ -1,0 +1,33 @@
+<div class="demo-riso" data-demo="riso">
+  <div class="poster">
+    <div class="pt p-type" data-riso><p>print<br>the web.</p></div>
+    <div class="pt p-photo" data-riso><div class="ph" role="img" aria-label="Hills under a red sun"></div></div>
+    <div class="pt p-dots" data-riso aria-hidden="true"></div>
+    <div class="pt p-note" data-riso data-riso-scale="0.35">
+      <p class="pn-big">2 inks</p>
+      <p>Pink lays down where green is missing. Blue lays down where red is. Black text gets both and prints deep violet.</p>
+    </div>
+    <div class="pt p-bars" data-riso aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="ctl">
+    <label>misregistration <input type="range" min="0" max="14" step="0.5" value="4"></label>
+  </div>
+</div>
+
+<script>
+  import { riso } from '../../lib/riso.js'
+  for (const root of document.querySelectorAll<HTMLElement>('[data-demo="riso"]')) {
+    let base = 4
+    // each tile eases its own inks into register on hover; the slider sets where they rest
+    const tiles = [...root.querySelectorAll<HTMLElement>('[data-riso]')].map(el => {
+      const k = +(el.dataset.risoScale || 1), r = riso(el, { shift: base * k })
+      let cur = base, target = base, raf = 0
+      const tick = () => { cur += (target - cur) * 0.18; r.shift(cur * k); raf = Math.abs(target - cur) > 0.05 ? requestAnimationFrame(tick) : 0 }
+      const to = (t: number) => { target = t; if (!raf) raf = requestAnimationFrame(tick) }
+      el.addEventListener('pointerenter', () => to(0))
+      el.addEventListener('pointerleave', () => to(base))
+      return (v: number) => { cur = target = v; r.shift(v * k) }
+    })
+    root.querySelector('input')!.addEventListener('input', e => { base = +(e.target as HTMLInputElement).value; tiles.forEach(jump => jump(base)) })
+  }
+</script>

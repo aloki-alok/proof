@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro'
+import Code from '../components/Code.astro'
+import Ink from '../components/demos/Ink.astro'
+import Riso from '../components/demos/Riso.astro'
+import Dial from '../components/demos/Dial.astro'
+import Readback from '../components/demos/Readback.astro'
+import Reed from '../components/demos/Reed.astro'
+import Ascii from '../components/demos/Ascii.astro'
+import { libraries, gzKB } from '../data/libraries.js'
+
+const demos = { ink: Ink, riso: Riso, dial: Dial, readback: Readback, reed: Reed, ascii: Ascii }
+const size = (l: (typeof libraries)[number]) => l.files.reduce((s, f) => s + +gzKB(f), 0).toFixed(1)
+const largest = Math.max(...libraries.map(l => +size(l))).toFixed(1)
+const rows = libraries.map(l => [l.slug, l.line.replace(/\.$/, ''), `${size(l)} KB`, `#${l.slug}`])
+---
+<Base title="proof: print, sound and text effects for the web" description="Six dependency-free JavaScript libraries that add print, sound and text effects to the HTML you already have.">
+  <section class="wrap hero">
+    <pre class="hero-ascii" id="hero" aria-hidden="true"></pre>
+    <h1>Six small libraries for print, sound and text effects on the web.</h1>
+    <p class="lede">Each library adds one effect to the HTML you already have. There are no dependencies and no build step. Copy a file into your project and import it. The largest is {largest} KB gzipped.</p>
+    <div class="ctas">
+      <a class="btn solid" href="/docs">Browse the libraries</a>
+      <a class="btn" href="/docs/install">Install</a>
+    </div>
+    <pre class="index-table" id="index" aria-label="Library index" data-rows={JSON.stringify(rows)}></pre>
+  </section>
+
+  {libraries.map(l => {
+    const Demo = demos[l.slug as keyof typeof demos]
+    return (
+      <section class={`sec lib-${l.slug}`} id={l.slug} data-rb-level={l.slug === 'readback' ? '0' : undefined}>
+        <p class="rule" data-rule={l.slug} aria-hidden="true"></p>
+        <div class="sec-head">
+          <h2 style={`font: ${l.face}; font-size: clamp(64px, 10vw, 144px)`}>{l.icon && <i class="ic" aria-hidden="true">{l.icon}</i>}{l.slug}</h2>
+          <p>{l.blurb}</p>
+          <p class="meta">{size(l)} KB gzipped{l.inspired && <>. Inspired by <a href={l.inspired[1]}>{l.inspired[0]}</a></>}</p>
+        </div>
+        <Demo />
+        <a class="sec-more" href={`/docs/${l.slug}`}>Read the {l.slug} docs</a>
+      </section>
+    )
+  })}
+
+  <section class="wrap howto">
+    <div>
+      <p class="rule" data-rule="install" aria-hidden="true"></p>
+      <h2>Install by copying one file</h2>
+      <p>There is no package and no build step. Download a library into your project and import it like any other ES module.</p>
+      <p>The file lives in your repository, so you can read all of it, change it, and update only when you choose.</p>
+      <a class="btn" href="/docs/install">Read the install guide</a>
+    </div>
+    <Code name="main.js" code={`import { ink } from './ink.js'
+import { riso } from './riso.js'
+
+ink(document.querySelector('.card'), { rough: 3 })
+riso(document.querySelector('.poster'), { shift: 4 })`} />
+  </section>
+</Base>
+
+<script>
+  import { field, table } from '../lib/ascii.js'
+  field(document.getElementById('hero'), { word: 'proof', rows: 20 })
+  const idx = document.getElementById('index')!
+  table(idx, JSON.parse(idx.dataset.rows!))
+</script>
