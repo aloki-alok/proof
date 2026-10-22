@@ -1,5 +1,7 @@
 // readback.js from proof, by Alok Ranjan (https://alokranjan.me). MIT license.
 const text = n => (n.textContent || '').replace(/\s+/g, ' ').trim()
+// a label can wrap its own control, whose option or field text is not part of the name
+const labelText = l => { const c = l.cloneNode(true); c.querySelectorAll('select, textarea, input').forEach(x => x.remove()); return text(c) }
 // an image inside a link or button names it, the way screen readers announce it
 const alts = el => [...el.querySelectorAll('img[alt]')].filter(i => !i.closest('[aria-hidden="true"]')).map(i => i.alt).join(' ').trim()
 const name = el => el.getAttribute('aria-label') || text(el) || alts(el) || el.getAttribute('title') || ''
@@ -17,7 +19,7 @@ function judge(n) {
   }
   if (tag === 'input' || tag === 'textarea' || tag === 'select') {
     const kind = tag === 'input' ? n.type : tag
-    const label = n.labels?.[0] ? text(n.labels[0]) : n.getAttribute('aria-label')
+    const label = n.labels?.[0] ? labelText(n.labels[0]) : n.getAttribute('aria-label')
     return label ? { tag, text: `${kind}: ${label}` } : { tag, text: `${kind}: no label`, gap: true }
   }
   return null

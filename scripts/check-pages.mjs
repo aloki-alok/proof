@@ -93,11 +93,14 @@ async function flows(browser, name) {
     const box = document.createElement('div')
     box.innerHTML = '<p>See <a href="/y"></a></p><h2><button></button></h2><a href="/z"><img src="/img/sample.svg" alt="Logo"></a><a href="/w"><img src="/img/sample.svg" alt="x" aria-hidden="true"></a><input type="submit" value="Go"><input type="hidden" name="t"><textarea></textarea><label>Plan <select><option>a</option></select></label>'
     document.body.append(box)
-    const out = read(box).map(l => `${l.tag}${l.gap ? ' gap' : ''}`)
+    const got = read(box)
+    const out = got.map(l => `${l.tag}${l.gap ? ' gap' : ''}`)
+    // a label's own controls are not part of its text, so a select is named by its label alone
+    out.push(got.find(l => l.tag === 'select')?.text)
     box.remove()
     return out
   })
-  check(lines.join() === 'p,a gap,h2,button gap,a,a gap,input,textarea gap,select', `${name} readback lines: ${lines}`)
+  check(lines.join() === 'p,a gap,h2,button gap,a,a gap,input,textarea gap,select,select: Plan', `${name} readback lines: ${lines}`)
 
   // theme toggle flips the page colour and survives a reload
   const bg = () => p.evaluate(() => getComputedStyle(document.body).backgroundColor)
