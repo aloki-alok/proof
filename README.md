@@ -1,8 +1,10 @@
-<p align="center"><img src="public/og.png" alt="proof, drawn as live ASCII characters, above the line: six small libraries for print, sound and text effects on the web" width="800"></p>
+<p align="center"><img src="public/og.png" alt="proof, drawn as live ASCII characters, above the line: six light libraries for print, sound and text effects on the web" width="800"></p>
 
 # proof
 
 Six dependency-free JavaScript libraries for print, sound and ASCII effects on real HTML. Each library is one ES module. Copy the file into your project, import it, and the code is yours.
+
+**Docs and live demos: https://aloki-alok.github.io/proof**
 
 Effects apply to the live page, mostly through SVG filters and the Web Audio API. Text stays selectable, and crawlers and screen readers can still read the page.
 
@@ -54,7 +56,7 @@ import { ink } from './ink.js'
 ink(document.querySelector('.card'), { rough: 3 })
 ```
 
-Each library's docs page has a live demo, the full API and browser notes.
+Each library's [docs page](https://aloki-alok.github.io/proof/docs) has a live demo, the full API and browser notes.
 
 ## Work on the site
 
