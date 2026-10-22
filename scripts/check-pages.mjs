@@ -12,7 +12,7 @@ if (shots) mkdirSync(shots, { recursive: true })
 const engines = { chromium: [chromium, process.env.PW_CHROMIUM], firefox: [firefox, process.env.PW_FIREFOX], webkit: [webkit, process.env.PW_WEBKIT] }
 // the docs sidebar lists every guide and library page, so a new library is checked without editing this file
 const side = await (await fetch(base + '/docs')).text()
-const docs = [...new Set([...side.matchAll(new RegExp(`href="${prefix}(/docs[^"#]*)"`, 'g'))].map(m => m[1]))]
+const docs = [...new Set([...side.matchAll(new RegExp(`href="${prefix}(/docs[^"#]*)"`, 'g'))].map(m => m[1].replace(/(.)\/$/, '$1')))]
 const pages = ['/', ...docs, '/changelog', '/nope']
 const libs = docs.filter(d => d.split('/').length === 3 && d !== '/docs/install').map(d => d.split('/')[2])
 const fails = []
@@ -71,7 +71,7 @@ async function flows(browser, name) {
   check(await p.isVisible('[data-search] .empty'), `${name} search: no empty state for a miss`)
   await p.fill('[data-search] input', 'waterfall')
   const hit = await attr('[data-search] [aria-selected=true]', 'href')
-  check(hit === prefix + '/docs/dial', `${name} search: "waterfall" picked ${hit}`)
+  check(hit === prefix + '/docs/dial/', `${name} search: "waterfall" picked ${hit}`)
   await p.fill('[data-search] input', 'read')
   const first = await attr('[data-search] [aria-selected=true]', 'id')
   await p.keyboard.press('ArrowDown')
