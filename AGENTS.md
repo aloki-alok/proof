@@ -8,7 +8,7 @@ proof is a docs site (Astro 7, static, Bun) for six dependency-free JavaScript l
 - Dev server: `bun run dev` (http://localhost:4747)
 - Type check: `bun run check`
 - Build: `bun run build` (output in `dist/`)
-- Preview the build: `bun run preview` (http://localhost:4747, stop it with `bunx astro preview stop`)
+- Preview the build: `bun run preview` (http://localhost:4747, stop it with Ctrl-C)
 - Browser check: `bunx playwright install chromium firefox webkit`, then with the preview running, `bun run check:pages`. It prints `PASS all pages and flows`.
 - Bun is the package manager. Use the lockfile `bun.lock`, not npm or yarn.
 
